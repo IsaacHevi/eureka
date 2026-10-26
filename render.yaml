@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: eureka
+    runtime: docker
+    plan: free
+    numInstances: 1
+    healthCheckPath: /
+    envVars:
+      - key: PUBLIC_ORIGIN
+        sync: false
