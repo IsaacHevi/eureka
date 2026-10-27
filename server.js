@@ -20,7 +20,7 @@ export function createApp({ ttl = DAY } = {}) {
   function roster(room) { broadcast(room, {type:'presence', users:[...room.clients].map(ws => ({id:ws.memberId, profile:ws.profile}))}); }
   const server = http.createServer(async (req,res) => {
     const headers = {'Cache-Control':'no-store','Referrer-Policy':'no-referrer','X-Content-Type-Options':'nosniff','Content-Security-Policy':"default-src 'self'; script-src 'self'; style-src 'self'; connect-src 'self'; img-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'"};
-    const files = {'/':'index.html','/app.js':'app.js','/style.css':'style.css'};
+    const files = {'/':'index.html','/app.js':'app.js','/alerts.js':'alerts.js','/sw.js':'sw.js','/style.css':'style.css'};
     const path = files[req.url?.split('?')[0]];
     if (!path || req.method !== 'GET') {res.writeHead(404,headers);res.end();return;}
     try {const body = await readFile(new URL(`./public/${path}`,import.meta.url)); res.writeHead(200,{...headers,'Content-Type':path.endsWith('.js')?'text/javascript':path.endsWith('.css')?'text/css':'text/html; charset=utf-8'});res.end(body);} catch {res.writeHead(500,headers);res.end();}

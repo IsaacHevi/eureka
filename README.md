@@ -17,7 +17,7 @@ npm test
 
 ## Behavior
 
-Create a named room, choose a nickname, and share its invitation link or full code. Invitations grant immediate access to all history. At most 20 connections may participate at once. Text messages arrive in real time. Rooms expire 24 hours after creation, independent of activity; creators may delete them earlier. No editing or individual message deletion. Synthesized retro notification sounds are opt-in.
+Create a named room, choose a nickname, and share its invitation link or full code. Invitations grant immediate access to all history. At most 20 connections may participate at once. Text messages arrive in real time. Rooms expire 24 hours after creation, independent of activity; creators may delete them earlier. No editing or individual message deletion. Synthesized retro notification sounds and browser pop-up alerts are opt-in.
 
 Messages, profiles, and room names are encrypted in browsers using Web Crypto AES-256-GCM with random 96-bit nonces. A cryptographically random 256-bit invitation secret derives separate message-encryption and server-access keys through HKDF-SHA-256. The invitation secret is carried in the URL fragment and is not sent to the HTTP server; the derived access key is sent over WebSocket. The server stores only encrypted history, opaque profiles, access credentials, expiry, and connections in memory. It does not receive the message-encryption key. Expired/deleted history is removed from application memory; this is not a guarantee of forensic memory erasure.
 
@@ -35,3 +35,13 @@ All traffic goes through the server; there are no direct peer connections or par
 - No Microsoft assets or audio files are bundled. The nostalgic presentation and synthesized tones are original implementation assets.
 
 The existing server tests cover live relay, history retrieval, invalid access, creator authorization, deletion, expiration, and HTTP privacy headers. A two-browser Chromium smoke check additionally exercised browser encryption/decryption, joining, real-time replies, refresh, mobile width, and deletion. Run a security review and production deployment hardening before sensitive use.
+
+## Message alerts
+
+Click **Enable alerts**, then allow notifications in the browser prompt. This also unlocks the retro sound player during the click so incoming messages can play sound in a background tab. **Sound: on/off** mutes sound independently; **Alerts: on** turns pop-ups off. Preferences are remembered locally without storing messages or keys. After refresh, interact with the page to let the browser resume sound.
+
+New messages from other participants play sound when enabled. If the tab is hidden or unfocused, they also increment the tab-title unread count and display a generic “New message in your private chat” notification when permitted. Names, room titles, message contents, and invitations are never included in notification payloads. Clicking a notification returns to Eureka. Focusing the tab or leaving/closing the room clears unread indicators and notifications. History loading and your own messages do not trigger alerts.
+
+The service worker displays notifications on compatible browsers; it does not cache the app or retain keys/messages, and it does not subscribe to a push service. **The Eureka tab must remain open and connected.** Closed or suspended tabs cannot reliably receive alerts. Desktop Chromium is browser-tested; Safari/Firefox behavior and OS banners still depend on permissions and device settings. iPhone/iPad web notifications require a Home Screen web app and push support, which this version does not implement. Do Not Disturb, blocked permissions, browser autoplay policy, mobile background suspension, and private-browsing restrictions may suppress sound or notifications.
+
+`npm test` also covers foreground/background alert behavior, generic notification contents, focus clearing, mute/disable, denied/unsupported permissions, and service-worker delivery selection.
